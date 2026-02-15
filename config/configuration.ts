@@ -1,24 +1,33 @@
-import { z } from 'zod';
+import { IsEnum, IsString, validate } from 'class-validator';
 
-// 1. Define the Schema
-export const EnvSchema = z.object({
-  MONGO_URL: z.string(),
-  PORT: z.coerce.number().default(3000),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-});
+enum NodeEnvironment {
+  Development = 'development',
+  Production = 'production',
+  Test = 'test',
+}
 
-// 2. Export the Type
-export type Env = z.infer<typeof EnvSchema>;
+export class EnvironmentVariables {
+  @IsString()
+  MONGO_URL?: string;
 
-// 3. The Factory Function
-export default () => {
-  const result = EnvSchema.safeParse(process.env);
+  @IsString()
+  PORT?: string;
 
-  if (!result.success) {
-    // Provides a readable error of exactly what is missing
-    throw new Error(`Config validation error: ${result.error.message}`);
-  }
-
-  return result.data;
+  @IsEnum(NodeEnvironment)
+  @IsString()
+  NODE_ENV?: string;
 };
 
+export default async () => {
+  const env = new EnvironmentVariables();
+  env.MONGO_URL = process.env.MONGO_URL;
+  env.PORT = process.env.PORT || '4001';
+  env.NODE_ENV = process.env.NODE_ENV as NodeEnvironment || NodeEnvironment.Development;
+
+  const errors = await validate(env, { skipMissingProperties: false });
+  if (errors.length > 0) {
+    throw new Error(`Config validation error: ${JSON.stringify(errors)}`);
+  }
+
+  return env;
+};
