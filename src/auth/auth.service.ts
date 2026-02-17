@@ -21,7 +21,7 @@ export class AuthService {
 
     async login(loginDTO: LoginDTO){
         const user = await this.userService.getUser(loginDTO)
-        const isMatch = await argon2.verify(user.passwordHashed, loginDTO.password)
+        const isMatch = await argon2.verify(user.password, loginDTO.password)
         if (isMatch) {
             const payload = { sub: user?._id, username: user?.firstName };
             const token = this.jwtService.signAsync(payload)
