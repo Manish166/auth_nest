@@ -2,15 +2,15 @@ import { IsString } from "class-validator";
 
 export class RegisterUserDTO {
     @IsString()
-    firstName?: string;
+    firstName!: string;
 
     @IsString()
     lastName?: string;
 
     @IsString()
-    passwordHashed?: string;
+    passwordHashed!: string;
 
     @IsString()
-    email?: string;
+    email!: string;
 }
 

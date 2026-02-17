@@ -13,9 +13,7 @@ import { EnvironmentVariables } from 'config/configuration';
       inject: [ConfigService],
       global: true,
       useFactory: (config: ConfigService) => ({
-        secret: config.getOrThrow<EnvironmentVariables['JWT_SECRET']>(
-          'JWT_SECRET',
-        ),
+        secret: config.getOrThrow<EnvironmentVariables['JWT_SECRET']>('JWT_SECRET'),
         signOptions: { expiresIn: '60s' },
       }),
     }),
